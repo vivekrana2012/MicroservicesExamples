@@ -13,7 +13,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
 import com.mongodb.MongoClient; 
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -31,7 +30,7 @@ public class DemoApplication {
 	JsonResponse login() {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = "{\"status\":\"success\", \"userId\":\"vivek\"}";
+		// String jsonString = "{\"status\":\"success\", \"userId\":\"vivek\"}";
 	   
 	    // Creating Credentials 
 	    MongoCredential credential = MongoCredential.createCredential("app", "users", "app_password".toCharArray()); 
@@ -43,17 +42,18 @@ public class DemoApplication {
 	    MongoDatabase database = mongo.getDatabase("users"); 
 	    MongoCollection<Document> collection = database.getCollection("authInfo");
 	    
+	    // running find query
 	    FindIterable<Document> cursor = collection.find(new BasicDBObject("username", "vivek"));
 	    
 		try {
 			JsonResponse response = mapper.readValue(cursor.first().toString(), JsonResponse.class);
-			
+			mongo.close();
 			return response;
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		mongo.close();
 		return null;
 	}
 }
