@@ -1,12 +1,12 @@
 package com.example.demo;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.bson.Document;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mongodb.client.FindIterable;
@@ -26,11 +26,11 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 	
-	@RequestMapping("/login")
-	JsonResponse login() {
+	@SuppressWarnings("resource")
+	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/x-www-form-urlencoded")
+	String login() {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		// String jsonString = "{\"status\":\"success\", \"userId\":\"vivek\"}";
 	   
 	    // Creating Credentials 
 	    MongoCredential credential = MongoCredential.createCredential("app", "users", "app_password".toCharArray()); 
@@ -46,11 +46,11 @@ public class DemoApplication {
 	    FindIterable<Document> cursor = collection.find(new BasicDBObject("username", "vivek"));
 	    
 		try {
-			JsonResponse response = mapper.readValue(cursor.first().toString(), JsonResponse.class);
-			mongo.close();
-			return response;
+			OneDocument response = mapper.readValue(cursor.first().toJson(), OneDocument.class);
+			return response.getStatus();
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
+			mongo.close();
 			e.printStackTrace();
 		}
 		mongo.close();

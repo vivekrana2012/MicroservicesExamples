@@ -1,11 +1,15 @@
 package com.example.demo;
 
-public class JsonResponse {
-	String _id;
-	String password;
-	String email;
-	String username;
+import java.io.IOException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class OneDocument {
+	private String _id;
+	private String password;
+	private String email;
+	private String username;
+	
 	// getter and setter
 	public String get_id() {
 		return _id;
@@ -30,5 +34,18 @@ public class JsonResponse {
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	public String getStatus(){
+		
+		String userName = getUsername();
+		String status;
+		
+		if(userName == null)
+			status = "failure";
+		else
+			status = "success";
+			
+			return "{\"status\":"+"\""+status+"\""+", \"username\": "+"\""+userName+"\"}";
 	}
 }
