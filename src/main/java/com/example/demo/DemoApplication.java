@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.bson.Document;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +29,8 @@ public class DemoApplication {
 	}
 	
 	@SuppressWarnings("resource")
-	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/x-www-form-urlencoded")
-	String login() {
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	String login(@ModelAttribute User user, Model model) {
 		
 		ObjectMapper mapper = new ObjectMapper();
 	   
@@ -43,7 +45,9 @@ public class DemoApplication {
 	    MongoCollection<Document> collection = database.getCollection("authInfo");
 	    
 	    // running find query
-	    FindIterable<Document> cursor = collection.find(new BasicDBObject("username", "vivek"));
+	    FindIterable<Document> cursor = collection.find(new BasicDBObject("username", user.getUsername()));
+	    
+	    if(cursor.first() == null) return "{\"status\":"+"\"failure\"}";
 	    
 		try {
 			OneDocument response = mapper.readValue(cursor.first().toJson(), OneDocument.class);
